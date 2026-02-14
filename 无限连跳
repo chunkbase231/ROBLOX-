@@ -1,0 +1,20 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+
+-- 使用 RenderStepped 每帧检测
+RunService.RenderStepped:Connect(function()
+    if not character or not humanoid then
+        return
+    end
+    
+    -- 如果角色处于空中（Freefall 或 FallingDown 状态）
+    if humanoid:GetState() == Enum.HumanoidStateType.Freefall or 
+       humanoid:GetState() == Enum.HumanoidStateType.FallingDown then
+        -- 强制触发跳跃
+        humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+    end
+end)
