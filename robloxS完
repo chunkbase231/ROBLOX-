@@ -2,4 +2,4 @@
 local player = game.Players.LocalPlayer
 
 -- 踢出自己
-player:Kick("游戏数据异常,请勿使用弟三方工具")
+player:Kick("游戏数据异常,请勿使用弟三方工具!")
