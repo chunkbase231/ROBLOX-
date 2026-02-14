@@ -1,20 +1,16 @@
 local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
 
 local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
 
--- 使用 RenderStepped 每帧检测
-RunService.RenderStepped:Connect(function()
-    if not character or not humanoid then
-        return
-    end
+-- 监听空格键按下
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end  -- 确保不是UI交互
     
-    -- 如果角色处于空中（Freefall 或 FallingDown 状态）
-    if humanoid:GetState() == Enum.HumanoidStateType.Freefall or 
-       humanoid:GetState() == Enum.HumanoidStateType.FallingDown then
-        -- 强制触发跳跃
+    if input.KeyCode == Enum.KeyCode.Space then
+        -- 无论是否在空中，都允许跳跃
         humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
     end
 end)
