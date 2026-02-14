@@ -5,29 +5,12 @@ local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
 
-local extraJumps = 2  -- 允许的额外空中跳跃次数（不包括地面跳）
-
+-- 监听空格键按下
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end
+    if gameProcessed then return end  -- 确保不是UI交互
     
     if input.KeyCode == Enum.KeyCode.Space then
-        local state = humanoid:GetState()
-        local isGrounded = humanoid.FloorMaterial ~= Enum.Material.Air
-        
-        -- 如果在地面或者还有额外跳跃次数
-        if isGrounded or extraJumps > 0 then
-            if not isGrounded then
-                extraJumps = extraJumps - 1  -- 消耗一次空中跳跃
-            end
-            
-            humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-        end
-    end
-end)
-
--- 落地时重置额外跳跃次数
-humanoid.StateChanged:Connect(function(oldState, newState)
-    if newState == Enum.HumanoidStateType.Landed then
-        extraJumps = 2  -- 重置为初始值
+        -- 无论是否在空中，都允许跳跃
+        humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
     end
 end)
