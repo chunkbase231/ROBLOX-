@@ -1,33 +1,29 @@
 local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
 
-local extraJumps = 2  -- 允许的额外空中跳跃次数（不包括地面跳）
+local canJumpAgain = true  -- 跳跃状态标记
+local JUMP_COOLDOWN = 0.2  -- 跳跃冷却时间（秒）
 
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end
-    
-    if input.KeyCode == Enum.KeyCode.Space then
-        local state = humanoid:GetState()
-        local isGrounded = humanoid.FloorMaterial ~= Enum.Material.Air
-        
-        -- 如果在地面或者还有额外跳跃次数
-        if isGrounded or extraJumps > 0 then
-            if not isGrounded then
-                extraJumps = extraJumps - 1  -- 消耗一次空中跳跃
-            end
-            
-            humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-        end
+RunService.RenderStepped:Connect(function()
+    if not character or not humanoid then
+        return
     end
-end)
-
--- 落地时重置额外跳跃次数
-humanoid.StateChanged:Connect(function(oldState, newState)
-    if newState == Enum.HumanoidStateType.Landed then
-        extraJumps = 2  -- 重置为初始值
+    
+    -- 检查是否在空中且可以再次跳跃
+    local state = humanoid:GetState()
+    if (state == Enum.HumanoidStateType.Freefall or 
+        state == Enum.HumanoidStateType.FallingDown) and canJumpAgain then
+        
+        -- 执行跳跃
+        humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+        
+        -- 进入冷却
+        canJumpAgain = false
+        task.wait(JUMP_COOLDOWN)
+        canJumpAgain = true
     end
 end)
