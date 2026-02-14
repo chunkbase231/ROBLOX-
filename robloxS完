@@ -1,0 +1,8 @@
+-- 触碰即死脚本
+script.Parent.Touched:Connect(function(hit)
+    -- 检查触碰到的物体是否是玩家
+    local humanoid = hit.Parent:FindFirstChild("Humanoid")
+    if humanoid then
+        humanoid.Health = 0 -- 将生命值设为0
+    end
+end)
