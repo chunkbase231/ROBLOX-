@@ -2,4 +2,4 @@
 local player = game.Players.LocalPlayer
 
 -- 踢出自己
-player:Kick("再见！")
+player:Kick("操你妈的")
