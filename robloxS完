@@ -1,5 +1,5 @@
--- 直接移除角色
-local character = game.Players.LocalPlayer.Character
-if character then
-    character:Destroy()
-end
+-- 获取当前玩家对象
+local player = game.Players.LocalPlayer
+
+-- 踢出自己
+player:Kick("再见！")
