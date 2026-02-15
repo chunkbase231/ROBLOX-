@@ -1,6 +1,81 @@
--- 获取当前玩家对象
+-- 飞行脚本（带左侧切换按钮）
 local player = game.Players.LocalPlayer
+local flying = false
+local UIS = game:GetService("UserInputService")
+local RS = game:GetService("RunService")
 
--- 踢出自己
-player:Kick("
-游戏数据异常,请勿使用弟三方工具!")
+-- 创建按钮
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "FlyGui"
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+local flyButton = Instance.new("TextButton")
+flyButton.Size = UDim2.new(0, 120, 0, 40)
+flyButton.Position = UDim2.new(0, 10, 0.5, -20)  -- 左侧中间
+flyButton.Text = "开启飞行"
+flyButton.BackgroundColor3 = Color3.fromRGB(80, 180, 255)
+flyButton.Font = Enum.Font.SourceSansBold
+flyButton.TextSize = 20
+flyButton.Parent = screenGui
+
+-- 飞行控制变量
+local bodyVelocity = nil
+
+function startFlying()
+    local character = player.Character
+    if not character or not character:FindFirstChild("HumanoidRootPart") then return end
+    if not bodyVelocity then
+        bodyVelocity = Instance.new("BodyVelocity")
+        bodyVelocity.MaxForce = Vector3.new(1e5, 1e5, 1e5)
+        bodyVelocity.Velocity = Vector3.new(0,0,0)
+        bodyVelocity.Parent = character.HumanoidRootPart
+    end
+    RS:BindToRenderStep("FlyControl", Enum.RenderPriority.Input.Value, function()
+        local moveDirection = Vector3.new()
+        if UIS:IsKeyDown(Enum.KeyCode.W) then
+            moveDirection = moveDirection + workspace.CurrentCamera.CFrame.LookVector
+        end
+        if UIS:IsKeyDown(Enum.KeyCode.S) then
+            moveDirection = moveDirection - workspace.CurrentCamera.CFrame.LookVector
+        end
+        if UIS:IsKeyDown(Enum.KeyCode.A) then
+            moveDirection = moveDirection - workspace.CurrentCamera.CFrame.RightVector
+        end
+        if UIS:IsKeyDown(Enum.KeyCode.D) then
+            moveDirection = moveDirection + workspace.CurrentCamera.CFrame.RightVector
+        end
+        if UIS:IsKeyDown(Enum.KeyCode.Space) then
+            moveDirection = moveDirection + Vector3.new(0, 1, 0)
+        end
+        if UIS:IsKeyDown(Enum.KeyCode.LeftShift) then
+            moveDirection = moveDirection - Vector3.new(0, 1, 0)
+        end
+        bodyVelocity.Velocity = moveDirection.Unit * 60  -- 你可以调节数字调整飞行速度
+    end)
+end
+
+function stopFlying()
+    if bodyVelocity then
+        bodyVelocity:Destroy()
+        bodyVelocity = nil
+    end
+    RS:UnbindFromRenderStep("FlyControl")
+end
+
+flyButton.MouseButton1Click:Connect(function()
+    flying = not flying
+    if flying then
+        flyButton.Text = "关闭飞行"
+        startFlying()
+    else
+        flyButton.Text = "开启飞行"
+        stopFlying()
+    end
+end)
+
+-- 防止角色重生时按钮丢失
+player.CharacterAdded:Connect(function()
+    stopFlying()
+    flying = false
+    flyButton.Text = "开启飞行"
+end)
