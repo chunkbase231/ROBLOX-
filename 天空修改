@@ -1,0 +1,25 @@
+-- ServerScriptService 中的 Script
+local Lighting = game:GetService("Lighting")
+
+-- 立即清除现有天空
+local oldSky = Lighting:FindFirstChildOfClass("Sky")
+if oldSky then
+    oldSky:Destroy()
+end
+
+-- 创建新天空
+local newSky = Instance.new("Sky")
+newSky.Parent = Lighting
+
+local mySkyId = 98830616522958  -- 替换成您的真实ID
+local idString = "rbxassetid://" .. tostring(mySkyId)
+
+-- 设置所有六个面
+newSky.SkyboxBk = idString  -- 后
+newSky.SkyboxDn = idString  -- 下
+newSky.SkyboxFt = idString  -- 前
+newSky.SkyboxLf = idString  -- 左
+newSky.SkyboxRt = idString  -- 右
+newSky.SkyboxUp = idString  -- 上
+
+print("天空已设置为ID: " .. mySkyId .. "，所有玩家可见")
