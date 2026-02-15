@@ -1,16 +1,18 @@
-local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
+-- 无限连跳脚本
+local player = game.Players.LocalPlayer
+local humanoid = nil
 
-local player = Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local humanoid = character:WaitForChild("Humanoid")
+-- 等待角色加载
+player.CharacterAdded:Connect(function(character)
+    humanoid = character:WaitForChild("Humanoid")
+end)
 
--- 监听空格键按下
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end  -- 确保不是UI交互
-    
-    if input.KeyCode == Enum.KeyCode.Space then
-        -- 无论是否在空中，都允许跳跃
+if player.Character then
+    humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+end
+
+game:GetService("UserInputService").JumpRequest:Connect(function()
+    if humanoid then
         humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
     end
 end)
