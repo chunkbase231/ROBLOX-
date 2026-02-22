@@ -1,1 +1,81 @@
-gg.alert("调用成功")
+-- ========== 1. 导入必要的安卓组件 ==========
+import "android.widget.*"
+import "android.media.MediaPlayer"
+import "android.os.Bundle"
+import "android.widget.LinearLayout"
+
+-- ========== 2. 界面布局设置 ==========
+activity.setTheme(android.R.style.Theme_DeviceDefault_Light)
+activity.setTitle("音频控制器")
+
+-- 创建垂直布局
+layout = LinearLayout(activity)
+layout.setOrientation(LinearLayout.VERTICAL)
+layout.setGravity(android.view.Gravity.CENTER)
+
+-- 创建【开启】按钮
+btn_start = Button(activity)
+btn_start.setText("开启")
+btn_start.setTextSize(18)
+
+-- 创建【关闭】按钮
+btn_stop = Button(activity)
+btn_stop.setText("关闭")
+btn_stop.setTextSize(18)
+btn_stop.setTop(50) -- 给关闭按钮加点上边距
+
+-- 把按钮添加到布局中
+layout.addView(btn_start)
+layout.addView(btn_stop)
+
+-- 设置布局给当前界面
+activity.setContentView(layout)
+
+-- ========== 3. 定义变量 ==========
+local mp = nil -- 媒体播放器对象，初始为空
+local audioUrl = "http://example.com/test.mp3" -- @@ @1 请把这里的链接换成真实的音频链接
+
+-- ========== 4. 按钮功能逻辑 ==========
+-- 【开启】按钮点击事件
+btn_start.onClick = function()
+    -- 防止重复创建，如果已经在播放，先停止
+    if mp ~= nil and mp.isPlaying() then
+        mp.stop()
+        mp.release()
+    end
+    
+    -- 创建新的播放器
+    mp = MediaPlayer()
+    
+    -- pcall 用于捕获异常（比如网络不好链接失效）
+    pcall(function()
+        mp:setDataSource(audioUrl) -- 设置音频链接
+        mp:prepareAsync() -- 异步准备（因为是网络链接，不能直接 prepare）
+        
+        -- 设置准备完成后的监听，准备好了就自动播放
+        mp.setOnPreparedListener(function()
+            mp:start()
+            Toast.makeText(activity, "开始播放", 0).show()
+        end)
+        
+        -- 如果播放出错
+        mp.setOnErrorListener(function()
+            Toast.makeText(activity, "播放失败，请检查链接或网络", 1).show()
+        end)
+        
+    end)
+end
+
+-- 【关闭】按钮点击事件
+btn_stop.onClick = function()
+    if mp ~= nil then
+        if mp.isPlaying() then
+            mp.stop() -- 停止播放
+        end
+        mp.release() -- 释放资源
+        mp = nil -- 清空对象
+        Toast.makeText(activity, "已停止", 0).show()
+    else
+        Toast.makeText(activity, "当前没有播放任务", 0).show()
+    end
+end
