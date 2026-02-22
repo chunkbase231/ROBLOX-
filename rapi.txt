@@ -9,7 +9,7 @@ function Main()
 
     -- === 在这里设置你的音频直链 ===
     -- 注意：必须是 .mp3 或 .ogg 的直链，不能是网页链接
-    local url = "https://example.com/audio.mp3"
+    local url = "https://www.aconvert.com/view.php?l=s19.aconvert.com/convert/p3r68-cdx67/ew2t6-0ties.mp3"
     
     -- 获取脚本运行的临时目录，用来存下载的文件
     local path = gg.getFile():gsub("/[^/]*$", "") .. "/temp_audio.mp3"
