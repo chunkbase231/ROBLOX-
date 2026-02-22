@@ -1,40 +1,49 @@
 function Main()
     SN = gg.choice({
-        "ON",
+        "ON", 
         "OFF"
     }, 0, "fantasy sky")
     if SN == nil then
         os.exit()
     end
 
-    -- 如果选择了 ON (返回值为 1)
-    if SN == 1 then
-        -- 导入安卓 MediaPlayer (使用 pcall 防止报错)
-        pcall(function()
-            import "android.media.MediaPlayer"
-            mp = MediaPlayer()
-            mp:setDataSource("https://www.aconvert.com/view.php?l=s19.aconvert.com/convert/p3r68-cdx67/ew2t6-0ties.mp3") -- 设置链接
-            mp:prepareAsync()
-            mp.setOnPreparedListener{onPrepared = function() mp:start() end}
-            gg.toast("音效已开启")
-        end)
-    end
+    -- === 在这里设置你的音频直链 ===
+    -- 注意：必须是 .mp3 或 .ogg 的直链，不能是网页链接
+    local url = "https://example.com/audio.mp3"
+    
+    -- 获取脚本运行的临时目录，用来存下载的文件
+    local path = gg.getFile():gsub("/[^/]*$", "") .. "/temp_audio.mp3"
 
-    -- 如果选择了 OFF (返回值为 2)
-    if SN == 2 then
-        -- 停止播放并释放资源
-        pcall(function()
-            if mp ~= nil then
-                mp:stop()
-                mp:release()
-            end
-            mp = nil
-            gg.toast("音效已关闭")
-        end)
-        gg.setVisible(false) -- 顺便隐藏 GG 界面
+    if SN == 1 then
+        -- 下载并播放
+        downloadAndPlay(url, path)
+    elseif SN == 2 then
+        -- 停止播放（GG的播放没法直接停止，只能提示）
+        gg.stopFriendly()
+        os.remove(path) -- 顺便删掉文件
+        print("功能关闭")
     end
 end
 
--- 全局变量 mp，确保在 Main 函数外也能被访问（用于停止）
-mp = nil
-Main() -- 运行主函数
+-- 函数：下载并播放
+function downloadAndPlay(link, file_path)
+    print("正在下载音效...")
+    
+    -- 使用 gg.download 下载文件
+    -- 参数：链接，保存路径，是否显示进度条(1=显示)
+    local success, err = pcall(gg.download, link, file_path, 1)
+    
+    if success then
+        print("下载完成，正在播放")
+        
+        -- 播放本地文件
+        -- 注意：GG的播放是异步的，且没有返回值控制暂停
+        gg.playSound(file_path)
+        
+    else
+        print("下载失败: " .. err)
+    end
+end
+
+-- 运行主程序
+Main()
