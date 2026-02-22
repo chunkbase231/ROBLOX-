@@ -1,1 +1,1 @@
-print("Hello.")
+gg.alert("调用成功")
