@@ -1,49 +1,42 @@
 function Main()
     SN = gg.choice({
-        "ON", 
+        "ON",
         "OFF"
-    }, 0, "fantasy sky")
+    }, nil, "fantasy sky")
     if SN == nil then
-        os.exit()
+        return
     end
 
-    -- === 在这里设置你的音频直链 ===
-    -- 注意：必须是 .mp3 或 .ogg 的直链，不能是网页链接
-    local url = "https://www.aconvert.com/view.php?l=s19.aconvert.com/convert/p3r68-cdx67/ew2t6-0ties.mp3"
-    
-    -- 获取脚本运行的临时目录，用来存下载的文件
-    local path = gg.getFile():gsub("/[^/]*$", "") .. "/temp_audio.mp3"
+    -- 音效链接（假设@@@1是你后续要换的真实URL）
+    local sound_url = "https://www.aconvert.com/view.php?l=s19.aconvert.com/convert/p3r68-cdx67/ew2t6-0ties.mp3"
 
-    if SN == 1 then
-        -- 下载并播放
-        downloadAndPlay(url, path)
-    elseif SN == 2 then
-        -- 停止播放（GG的播放没法直接停止，只能提示）
-        gg.stopFriendly()
-        os.remove(path) -- 顺便删掉文件
-        print("功能关闭")
+    if SN == 1 then -- ON
+        PlaySound(sound_url)
+    elseif SN == 2 then -- OFF
+        StopSound(sound_url)
     end
 end
 
--- 函数：下载并播放
-function downloadAndPlay(link, file_path)
-    print("正在下载音效...")
-    
-    -- 使用 gg.download 下载文件
-    -- 参数：链接，保存路径，是否显示进度条(1=显示)
-    local success, err = pcall(gg.download, link, file_path, 1)
-    
-    if success then
-        print("下载完成，正在播放")
-        
-        -- 播放本地文件
-        -- 注意：GG的播放是异步的，且没有返回值控制暂停
-        gg.playSound(file_path)
-        
-    else
-        print("下载失败: " .. err)
+-- 播放指定链接音效函数（需要你的环境支持）
+function PlaySound(url)
+    -- 如果是 Roblox，假设 API 是 Sound 对象
+    -- 伪代码如下，具体要用你的实际API:
+    local sound = Instance.new("Sound")
+    sound.SoundId = url
+    sound.Parent = workspace
+    sound:Play()
+end
+
+-- 停止音效函数
+function StopSound(url)
+    -- Roblox 示例：把播放的Sound停掉
+    for _, obj in pairs(workspace:GetChildren()) do
+        if obj:IsA("Sound") and obj.SoundId == url then
+            obj:Stop()
+            obj:Destroy()
+        end
     end
 end
 
--- 运行主程序
+-- 执行主函数
 Main()
