@@ -473,4 +473,4 @@ modules["PNGLib\\Modules\\Deflate.lua"] = function()
 		local res = 0
 			
 		for i = 1, numBits do
-			res = lshift(res, 1) + ban
+			res = lshift(res, 1) + band(bits, 1)
